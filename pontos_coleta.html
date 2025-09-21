@@ -100,10 +100,19 @@
     <div class="container">
         <h2>Listar Pontos de Coleta Próximos</h2>
         <div class="form-group">
+            <label for="userLat">Sua Latitude (opcional):</label>
+            <input type="text" id="userLat">
+        </div>
+        <div class="form-group">
+            <label for="userLon">Sua Longitude (opcional):</label>
+            <input type="text" id="userLon">
+        </div>
+        <div class="form-group">
             <label for="raio">Raio (km):</label>
             <input type="number" step="0.1" id="raio" value="5" required>
         </div>
-        <button id="btnBuscar">Buscar Pontos Próximos de Mim</button>
+        <button id="btnBuscarManual" style="margin-bottom: 20px;">Buscar Pontos Manualmente (Mais preciso)</button>
+        <button id="btnBuscarAuto" style="background-color: #17a2b8;">Buscar Pontos Próximos de Mim</button>
         <p id="localizacaoStatus"></p>
         <div id="resultados"></div>
     </div>
@@ -133,48 +142,69 @@
             }
         });
 
-        document.getElementById('btnBuscar').addEventListener('click', () => {
-            const statusDiv = document.getElementById('localizacaoStatus');
+        const buscarPontos = async (lat, lon, raio) => {
             const resultadosDiv = document.getElementById('resultados');
+            const statusDiv = document.getElementById('localizacaoStatus');
+            statusDiv.textContent = 'Buscando pontos...';
+
+            try {
+                const url = `http://localhost:8080/api/pontos-coleta/proximos?lat=${lat}&lon=${lon}&raio=${raio}`;
+                const response = await fetch(url);
+                const pontos = await response.json();
+
+                resultadosDiv.innerHTML = '';
+                if (pontos.length === 0) {
+                    resultadosDiv.innerHTML = '<p>Nenhum ponto de coleta encontrado no raio especificado.</p>';
+                    return;
+                }
+
+                pontos.forEach(ponto => {
+                    const div = document.createElement('div');
+                    div.className = 'ponto';
+                    div.innerHTML = `<strong>${ponto.nome}</strong> (${ponto.tipoResiduo})<br>
+                                     Distância: ${ponto.distancia.toFixed(2)} km<br>
+                                     Lat: ${ponto.latitude.toFixed(6)}, Lon: ${ponto.longitude.toFixed(6)}`;
+                    resultadosDiv.appendChild(div);
+                });
+            } catch (error) {
+                resultadosDiv.innerHTML = `<p style="color: red;">Erro ao buscar pontos: ${error.message}</p>`;
+                console.error(error);
+            } finally {
+                statusDiv.textContent = '';
+            }
+        };
+
+        // Evento para busca manual
+        document.getElementById('btnBuscarManual').addEventListener('click', () => {
+            const lat = document.getElementById('userLat').value;
+            const lon = document.getElementById('userLon').value;
             const raio = document.getElementById('raio').value;
-            resultadosDiv.innerHTML = '';
+            
+            if (!lat || !lon) {
+                alert('Por favor, preencha a latitude e longitude para a busca manual.');
+                return;
+            }
+
+            buscarPontos(lat, lon, raio);
+        });
+
+        // Evento para busca automática
+        document.getElementById('btnBuscarAuto').addEventListener('click', () => {
+            const statusDiv = document.getElementById('localizacaoStatus');
+            const raio = document.getElementById('raio').value;
+
             statusDiv.textContent = 'Obtendo sua localização...';
 
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
-                    async (position) => {
+                    (position) => {
                         const lat = position.coords.latitude;
                         const lon = position.coords.longitude;
                         statusDiv.textContent = `Localização obtida. Buscando pontos...`;
-
-                        try {
-                            const url = `http://localhost:8080/api/pontos-coleta/proximos?lat=${lat}&lon=${lon}&raio=${raio}`;
-                            const response = await fetch(url);
-                            const pontos = await response.json();
-
-                            resultadosDiv.innerHTML = '';
-                            if (pontos.length === 0) {
-                                resultadosDiv.innerHTML = '<p>Nenhum ponto de coleta encontrado no raio especificado.</p>';
-                                return;
-                            }
-
-                            pontos.forEach(ponto => {
-                                const div = document.createElement('div');
-                                div.className = 'ponto';
-                                div.innerHTML = `<strong>${ponto.nome}</strong> (${ponto.tipoResiduo})<br>
-                                                 Distância: ${ponto.distancia.toFixed(2)} km<br>
-                                                 Lat: ${ponto.latitude.toFixed(6)}, Lon: ${ponto.longitude.toFixed(6)}`;
-                                resultadosDiv.appendChild(div);
-                            });
-                        } catch (error) {
-                            resultadosDiv.innerHTML = `<p style="color: red;">Erro ao buscar pontos: ${error.message}</p>`;
-                            console.error(error);
-                        } finally {
-                            statusDiv.textContent = '';
-                        }
+                        buscarPontos(lat, lon, raio);
                     },
                     (error) => {
-                        statusDiv.textContent = 'Erro ao obter localização. Por favor, permita o acesso à localização.';
+                        statusDiv.textContent = 'Erro ao obter localização. Por favor, permita o acesso.';
                         console.error('Erro de geolocalização:', error);
                     }
                 );
