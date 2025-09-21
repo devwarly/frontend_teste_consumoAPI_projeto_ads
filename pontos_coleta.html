@@ -1,23 +1,78 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teste de Pontos de Coleta</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
-        .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin-bottom: 20px; }
-        h2 { color: #333; }
-        .form-group { margin-bottom: 15px; }
-        input, select, button { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #28a745; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #218838; }
-        #resultados { margin-top: 20px; }
-        .ponto { padding: 10px; border-bottom: 1px solid #ddd; }
-        #localizacaoStatus { margin-bottom: 15px; font-weight: bold; }
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #resultados {
+            margin-top: 20px;
+        }
+
+        .ponto {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #localizacaoStatus {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
     </style>
 </head>
+
 <body>
+    <div style="width: 200px;">
+        <a href="index.html">
+            <button>Voltar</button>
+        </a>
+    </div>
 
     <div class="container">
         <h2>Cadastrar Ponto de Coleta</h2>
@@ -56,7 +111,7 @@
     <script>
         document.getElementById('formCadastro').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const ponto = {
                 nome: document.getElementById('nome').value,
                 tipoResiduo: document.getElementById('tipoResiduo').value,
@@ -129,4 +184,5 @@
         });
     </script>
 </body>
+
 </html>
