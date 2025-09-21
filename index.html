@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuário e Empresa</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .form-container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        input, select { width: 100%; padding: 8px; margin: 5px 0 10px 0; display: inline-block; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+        #responseMessage { margin-top: 20px; padding: 10px; border-radius: 4px; }
+        #responseMessage.success { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+        #responseMessage.error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Cadastro de Usuário</h2>
+        <form id="userForm">
+            <label for="userName">Nome:</label>
+            <input type="text" id="userName" required>
+
+            <label for="userEmail">Email:</label>
+            <input type="email" id="userEmail" required>
+
+            <label for="userPassword">Senha:</label>
+            <input type="password" id="userPassword" required>
+
+            <label for="userPhone">Telefone:</label>
+            <input type="text" id="userPhone" required>
+
+            <h3>Endereço</h3>
+            <label for="userCep">CEP:</label>
+            <input type="text" id="userCep" required>
+
+            <label for="userRua">Rua:</label>
+            <input type="text" id="userRua" required>
+
+            <label for="userNumero">Número:</label>
+            <input type="text" id="userNumero" required>
+
+            <label for="userBairro">Bairro:</label>
+            <input type="text" id="userBairro" required>
+
+            <label for="userCidade">Cidade:</label>
+            <input type="text" id="userCidade" required>
+
+            <label for="userEstado">Estado:</label>
+            <input type="text" id="userEstado" required>
+
+            <button type="submit">Cadastrar Usuário</button>
+        </form>
+    </div>
+
+    <div class="form-container" style="margin-top: 20px;">
+        <h2>Cadastro de Empresa</h2>
+        <form id="companyForm">
+            <label for="companyRazaoSocial">Razão Social:</label>
+            <input type="text" id="companyRazaoSocial" required>
+
+            <label for="companyNomeFantasia">Nome Fantasia:</label>
+            <input type="text" id="companyNomeFantasia" required>
+
+            <label for="companyCnpj">CNPJ:</label>
+            <input type="text" id="companyCnpj" required>
+
+            <label for="companyEmail">Email:</label>
+            <input type="email" id="companyEmail" required>
+
+            <label for="companyPassword">Senha:</label>
+            <input type="password" id="companyPassword" required>
+
+            <label for="companyPhone">Telefone:</label>
+            <input type="text" id="companyPhone" required>
+
+            <h3>Endereço</h3>
+            <label for="companyCep">CEP:</label>
+            <input type="text" id="companyCep" required>
+
+            <label for="companyRua">Rua:</label>
+            <input type="text" id="companyRua" required>
+
+            <label for="companyNumero">Número:</label>
+            <input type="text" id="companyNumero" required>
+
+            <label for="companyBairro">Bairro:</label>
+            <input type="text" id="companyBairro" required>
+
+            <label for="companyCidade">Cidade:</label>
+            <input type="text" id="companyCidade" required>
+
+            <label for="companyEstado">Estado:</label>
+            <input type="text" id="companyEstado" required>
+
+            <label for="companyDescricao">Descrição:</label>
+            <textarea id="companyDescricao" required></textarea>
+
+            <button type="submit">Cadastrar Empresa</button>
+        </form>
+    </div>
+
+    <div id="responseMessage"></div>
+
+    <div>
+        <a href="pontos_coleta.html">
+            <button>Pontos Coleta</button>
+        </a>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

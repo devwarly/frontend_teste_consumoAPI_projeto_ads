@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Pontos de Coleta</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
+        .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin-bottom: 20px; }
+        h2 { color: #333; }
+        .form-group { margin-bottom: 15px; }
+        input, select, button { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #218838; }
+        #resultados { margin-top: 20px; }
+        .ponto { padding: 10px; border-bottom: 1px solid #ddd; }
+        #localizacaoStatus { margin-bottom: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Cadastrar Ponto de Coleta</h2>
+        <form id="formCadastro">
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" required>
+            </div>
+            <div class="form-group">
+                <label for="tipoResiduo">Tipo de Resíduo:</label>
+                <input type="text" id="tipoResiduo" required>
+            </div>
+            <div class="form-group">
+                <label for="latitude">Latitude:</label>
+                <input type="text" id="latitude" required>
+            </div>
+            <div class="form-group">
+                <label for="longitude">Longitude:</label>
+                <input type="text" id="longitude" required>
+            </div>
+            <button type="submit">Cadastrar</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <h2>Listar Pontos de Coleta Próximos</h2>
+        <div class="form-group">
+            <label for="raio">Raio (km):</label>
+            <input type="number" step="0.1" id="raio" value="5" required>
+        </div>
+        <button id="btnBuscar">Buscar Pontos Próximos de Mim</button>
+        <p id="localizacaoStatus"></p>
+        <div id="resultados"></div>
+    </div>
+
+    <script>
+        document.getElementById('formCadastro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const ponto = {
+                nome: document.getElementById('nome').value,
+                tipoResiduo: document.getElementById('tipoResiduo').value,
+                latitude: parseFloat(document.getElementById('latitude').value),
+                longitude: parseFloat(document.getElementById('longitude').value)
+            };
+
+            const response = await fetch('http://localhost:8080/api/pontos-coleta', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(ponto)
+            });
+
+            if (response.ok) {
+                alert('Ponto de coleta cadastrado com sucesso!');
+                e.target.reset();
+            } else {
+                alert('Erro ao cadastrar. Verifique a API.');
+            }
+        });
+
+        document.getElementById('btnBuscar').addEventListener('click', () => {
+            const statusDiv = document.getElementById('localizacaoStatus');
+            const resultadosDiv = document.getElementById('resultados');
+            const raio = document.getElementById('raio').value;
+            resultadosDiv.innerHTML = '';
+            statusDiv.textContent = 'Obtendo sua localização...';
+
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        statusDiv.textContent = `Localização obtida. Buscando pontos...`;
+
+                        try {
+                            const url = `http://localhost:8080/api/pontos-coleta/proximos?lat=${lat}&lon=${lon}&raio=${raio}`;
+                            const response = await fetch(url);
+                            const pontos = await response.json();
+
+                            resultadosDiv.innerHTML = '';
+                            if (pontos.length === 0) {
+                                resultadosDiv.innerHTML = '<p>Nenhum ponto de coleta encontrado no raio especificado.</p>';
+                                return;
+                            }
+
+                            pontos.forEach(ponto => {
+                                const div = document.createElement('div');
+                                div.className = 'ponto';
+                                div.innerHTML = `<strong>${ponto.nome}</strong> (${ponto.tipoResiduo})<br>
+                                                 Distância: ${ponto.distancia.toFixed(2)} km<br>
+                                                 Lat: ${ponto.latitude.toFixed(6)}, Lon: ${ponto.longitude.toFixed(6)}`;
+                                resultadosDiv.appendChild(div);
+                            });
+                        } catch (error) {
+                            resultadosDiv.innerHTML = `<p style="color: red;">Erro ao buscar pontos: ${error.message}</p>`;
+                            console.error(error);
+                        } finally {
+                            statusDiv.textContent = '';
+                        }
+                    },
+                    (error) => {
+                        statusDiv.textContent = 'Erro ao obter localização. Por favor, permita o acesso à localização.';
+                        console.error('Erro de geolocalização:', error);
+                    }
+                );
+            } else {
+                statusDiv.textContent = 'Geolocalização não é suportada pelo seu navegador.';
+            }
+        });
+    </script>
+</body>
+</html>
